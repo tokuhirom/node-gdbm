@@ -4,7 +4,10 @@ gdbm.node: gdbm.cc
 	node-waf
 
 test: gdbm.node
-	node test.js
+	nodeunit test.js
+
+deps:
+	npm install nodeunit
 
 .PHONY: test all
 
