@@ -20,12 +20,20 @@ static Persistent<String> close_symbol;
 static Persistent<String> store_symbol;
 static Persistent<String> fetch_symbol;
 
+#define CHECK_DB() \
+    if (!Unwrap<GDBM>(args.This())->db_) { \
+        return ThrowException(Exception::Error(String::New("DB has not been opened"))); \
+    }
 
 class GDBM : public node::ObjectWrap {
 private:
     GDBM_FILE db_;
 
 public:
+    GDBM() {
+        db_ = NULL;
+    }
+
     static void Initialize(v8::Handle<v8::Object> target) {
         HandleScope scope;
 
@@ -47,13 +55,15 @@ public:
         NODE_SET_PROTOTYPE_METHOD(t, "exists", Exists);
         NODE_SET_PROTOTYPE_METHOD(t, "delete", Delete);
         NODE_SET_PROTOTYPE_METHOD(t, "fdesc", Fdesc);
+        NODE_SET_PROTOTYPE_METHOD(t, "reorganize", Reorganize);
+        NODE_SET_PROTOTYPE_METHOD(t, "firstkey", FirstKey);
+        NODE_SET_PROTOTYPE_METHOD(t, "nextkey", NextKey);
 
         target->Set(String::NewSymbol("GDBM"), t->GetFunction());
         NODE_SET_METHOD(t, "strerror", StrError);
     }
 
     bool Open (const char* fname, int block_size, int flags, int mode) {
-        fprintf(stderr, "args::: %s, %d, %d, %d\n", fname, block_size, flags, mode);
         db_ = gdbm_open(fname, block_size, flags, mode, NULL);
         return !!db_;
     }
@@ -100,6 +110,7 @@ public:
     }
 	static Handle<Value> Sync(const v8::Arguments& args) {
         HandleScope scope;
+        CHECK_DB();
         Unwrap<GDBM>(args.This())->Sync();
         return Undefined();
     }
@@ -114,6 +125,7 @@ public:
     }
 	static Handle<Value> Store(const v8::Arguments& args) {
         HandleScope scope;
+        CHECK_DB();
         assert(args.Length() >= 2);
         int flag = GDBM_REPLACE;
         if (args.Length() > 2) {
@@ -123,9 +135,9 @@ public:
         v8::Handle<v8::String> val = args[1]->ToString();
         int ret = Unwrap<GDBM>(args.This())->Store(
             *String::Utf8Value(key),
-            key->Length(),
+            key->Utf8Length(),
             *String::Utf8Value(val),
-            val->Length(),
+            val->Utf8Length(),
             flag
         );
         return scope.Close(v8::Int32::New(ret));
@@ -138,13 +150,20 @@ public:
     }
     static Handle<Value> Fetch(const v8::Arguments& args) {
         HandleScope scope;
+        CHECK_DB();
         assert(args.Length() >= 1);
         v8::Handle<v8::String> key = args[0]->ToString();
         datum val = Unwrap<GDBM>(args.This())->Fetch(
             *String::Utf8Value(key),
-            key->Length()
+            key->Utf8Length()
         );
-        return scope.Close(v8::String::New(val.dptr, val.dsize));
+        if (val.dptr) {
+            Handle <String>str = v8::String::New(val.dptr, val.dsize);
+            free(val.dptr);
+            return scope.Close(str);
+        } else {
+            return scope.Close(Undefined());
+        }
     }
 
     bool Exists(char * str, int len) {
@@ -153,13 +172,25 @@ public:
     }
     static Handle<Value> Exists(const v8::Arguments& args) {
         HandleScope scope;
+        CHECK_DB();
         assert(args.Length() >= 1);
         v8::Handle<v8::String> key = args[0]->ToString();
         bool ret = Unwrap<GDBM>(args.This())->Exists(
             *String::Utf8Value(key),
-            key->Length()
+            key->Utf8Length()
         );
         return scope.Close(v8::Boolean::New(ret));
+    }
+
+    int Reorganize() {
+        assert(db_);
+        return gdbm_reorganize(db_);
+    }
+    static Handle<Value> Reorganize(const v8::Arguments& args) {
+        HandleScope scope;
+        CHECK_DB();
+        Unwrap<GDBM>(args.This())->Reorganize();
+        return Undefined();
     }
 
     int Fdesc() {
@@ -167,6 +198,7 @@ public:
     }
     static Handle<Value> Fdesc(const v8::Arguments& args) {
         HandleScope scope;
+        CHECK_DB();
         int ret = Unwrap<GDBM>(args.This())->Fdesc();
         return scope.Close(v8::Int32::New(ret));
     }
@@ -177,13 +209,54 @@ public:
     }
     static Handle<Value> Delete(const v8::Arguments& args) {
         HandleScope scope;
+        CHECK_DB();
         assert(args.Length() >= 1);
         v8::Handle<v8::String> key = args[0]->ToString();
         bool ret = Unwrap<GDBM>(args.This())->Delete(
             *String::Utf8Value(key),
-            key->Length()
+            key->Utf8Length()
         );
         return scope.Close(v8::Boolean::New(ret));
+    }
+
+    datum FirstKey() {
+        return gdbm_firstkey(db_);
+    }
+    static Handle<Value> FirstKey(const v8::Arguments& args) {
+        HandleScope scope;
+
+        CHECK_DB();
+        datum key = Unwrap<GDBM>(args.This())->FirstKey();
+        if (key.dptr) {
+            Local<String> ret = String::New(key.dptr, key.dsize);
+            free(key.dptr);
+            return scope.Close(ret);
+        } else {
+            return scope.Close(Undefined());
+        }
+    }
+
+    datum NextKey(char * str, int len) {
+        datum key = {str, len};
+        return gdbm_nextkey(db_, key);
+    }
+    static Handle<Value> NextKey(const v8::Arguments& args) {
+        HandleScope scope;
+        CHECK_DB();
+        assert(args.Length()==1);
+
+        v8::Handle<v8::String> ckey = args[0]->ToString();
+        datum nkey = Unwrap<GDBM>(args.This())->NextKey(
+            *String::Utf8Value(ckey),
+            ckey->Utf8Length()
+        );
+        if (nkey.dptr) {
+            Local<Value> ret = String::New(nkey.dptr, nkey.dsize);
+            free(nkey.dptr);
+            return scope.Close(ret);
+        } else {
+            return scope.Close(Undefined());
+        }
     }
 
 	static Handle<Value> Errno(const v8::Arguments& args) {

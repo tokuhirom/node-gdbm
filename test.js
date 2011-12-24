@@ -4,9 +4,6 @@ var gdbm = require('./build/Release/gdbm'),
     fs = require('fs'),
     undefined;
 
-console.log(gdbm.gdbm()); // 'world'
-
-
 exports.setUp = function (callback) {
     fs.unlink('hoge.db', function (err) {
         // ignore error
@@ -26,11 +23,12 @@ exports.files = function (t) {
     t.ok(gdbm.GDBM_WRITER);
     var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
     t.ok(ret);
-    console.log(db.strerror());
-    console.log('errno: ' + db.errno());
+    if (!ret) {
+        console.log(db.strerror());
+        console.log('errno: ' + db.errno());
+    }
     db.sync();
     t.ok(db.fdesc());
-    console.log(db.fdesc());
     t.ok((''+db.fdesc()).match(/^[0-9]+$/));
     db.close();
 
@@ -68,7 +66,103 @@ exports.exists_delete = function (t) {
     t.ok(db.exists('dan'));
     db.delete('dan');
     t.ok(!db.exists('dan'));
+    db.reorganize();
     db.close();
+
+    t.done();
+};
+
+exports.iterator = function (t) {
+    var db = new gdbm.GDBM();
+
+    var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
+    t.ok(ret);
+
+    var key = db.firstkey();
+    var ret = [];
+    while (key) {
+        ret.push(key);
+        key = db.nextkey(key);
+    }
+    t.equal(ret.sort().join(','), '');
+
+    db.close();
+
+    t.done();
+};
+
+exports.iterator2 = function (t) {
+    var db = new gdbm.GDBM();
+
+    var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
+    t.ok(ret);
+    db.store('a', '1');
+    db.store('b', '2');
+    db.store('c', '3');
+
+    var key = db.firstkey();
+    var ret = [];
+    while (key) {
+        ret.push(key);
+        key = db.nextkey(key);
+    }
+    t.equal(ret.sort().join(','), 'a,b,c');
+
+    db.close();
+
+    t.done();
+};
+
+exports.i18n = function (t) {
+    var db = new gdbm.GDBM();
+
+    var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
+    t.ok(!db.exists('いやんばかん'));
+    db.store('いやんばかん', 'そこはだめよ');
+    t.equal(db.fetch('いやんばかん'), 'そこはだめよ');
+    t.ok(db.exists('いやんばかん'));
+    db.delete('いやんばかん');
+    t.ok(!db.exists('いやんばかん'));
+
+    {
+        db.store('にくまん', 'おいしい');
+        db.store('あんまん', 'あまい');
+
+        var key = db.firstkey();
+        var ret = [];
+        while (key) {
+            ret.push(key);
+            key = db.nextkey(key);
+        }
+        t.equal(ret.sort().join(','), 'あんまん,にくまん');
+    }
+
+    db.close();
+
+    t.done();
+};
+
+exports.errHandling = function (t) {
+    var db = new gdbm.GDBM();
+    db.close();
+    t.throws(function () {
+        db.sync();
+    });
+    t.throws(function () {
+        db.store('hoge', 'fuga');
+    });
+    t.throws(function () {
+        db.fetch('hoge');
+    });
+    t.throws(function () {
+        db.exists('hoge');
+    });
+    t.throws(function () {
+        db.reorganize();
+    });
+    t.throws(function () { db.fdesc(); });
+    t.throws(function () { db.firstkey(); });
+    t.throws(function () { db.nextkey('hoge'); });
 
     t.done();
 };

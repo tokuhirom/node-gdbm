@@ -9,7 +9,7 @@ def configure(conf):
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
   # if -d '.git':
-  conf.env.append_unique('CXXFLAGS', ["-Wall"])
+  conf.env.append_unique('CXXFLAGS', ["-Wall", '-g'])
   conf.env.append_unique('LINKFLAGS', '-lgdbm')
 
 def build(bld):
