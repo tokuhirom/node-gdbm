@@ -4,6 +4,7 @@
 #include <v8.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <cstdio>
 
 using namespace v8;
 using namespace node;
@@ -28,13 +29,27 @@ public:
         open_symbol  = NODE_PSYMBOL("open");
         close_symbol = NODE_PSYMBOL("close");
 
-        // NODE_SET_PROTOTYPE_METHOD(t, "open", open);
+    target->Set(v8::String::NewSymbol("gdbm_version"),
+         v8::String::New(gdbm_version));
+
+
+        NODE_SET_PROTOTYPE_METHOD(t, "open", Open);
         // NODE_SET_PROTOTYPE_METHOD(t, "close", Close);
 
         target->Set(String::NewSymbol("GDBM"), t->GetFunction());
     }
 
-protected:
+    bool Open (const char* fname) {
+        fprintf(stderr, "OK::: %s\n", fname);
+        return true;
+    }
+
+	static Handle<Value> Open(const Arguments& args) {
+		HandleScope scope;
+		Unwrap<GDBM> (args.This())->Open(*String::Utf8Value(args[0]));
+		return Undefined();
+	}
+
     static Handle<Value> New (const Arguments& args) {
         HandleScope scope;
 
@@ -49,6 +64,7 @@ extern "C" void
 init(Handle<Object> target) {
     HandleScope scope;
     NODE_SET_METHOD(target, "gdbm", Method);
+
     GDBM::Initialize(target);
 }
 
