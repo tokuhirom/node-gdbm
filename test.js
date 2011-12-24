@@ -144,22 +144,15 @@ exports.i18n = function (t) {
 
 exports.errHandling = function (t) {
     var db = new gdbm.GDBM();
+
+    // no exception on closing
     db.close();
-    t.throws(function () {
-        db.sync();
-    });
-    t.throws(function () {
-        db.store('hoge', 'fuga');
-    });
-    t.throws(function () {
-        db.fetch('hoge');
-    });
-    t.throws(function () {
-        db.exists('hoge');
-    });
-    t.throws(function () {
-        db.reorganize();
-    });
+
+    t.throws(function () { db.sync(); });
+    t.throws(function () { db.store('hoge', 'fuga'); });
+    t.throws(function () { db.fetch('hoge'); });
+    t.throws(function () { db.exists('hoge'); });
+    t.throws(function () { db.reorganize(); });
     t.throws(function () { db.fdesc(); });
     t.throws(function () { db.firstkey(); });
     t.throws(function () { db.nextkey('hoge'); });
