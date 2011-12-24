@@ -45,6 +45,8 @@ public:
         NODE_SET_PROTOTYPE_METHOD(t, "store", Store);
         NODE_SET_PROTOTYPE_METHOD(t, "fetch", Fetch);
         NODE_SET_PROTOTYPE_METHOD(t, "exists", Exists);
+        NODE_SET_PROTOTYPE_METHOD(t, "delete", Delete);
+        NODE_SET_PROTOTYPE_METHOD(t, "fdesc", Fdesc);
 
         target->Set(String::NewSymbol("GDBM"), t->GetFunction());
         NODE_SET_METHOD(t, "strerror", StrError);
@@ -103,12 +105,8 @@ public:
     }
 
     int Store(char *key_str, int key_len, char * content_str, int content_len, int flag) {
-        datum key;
-        key.dptr = key_str;
-        key.dsize = key_len;
-        datum content;
-        content.dptr = content_str;
-        content.dsize = content_len;
+        datum key = {key_str, key_len};
+        datum content = {content_str, content_len};
         // int gdbm_store (GDBM_FILE dbf, datum key, datum content, int flag);
         assert(db_);
         gdbm_store(db_, key, content, flag);
@@ -135,9 +133,7 @@ public:
 
     // datum gdbm_fetch (GDBM_FILE dbf, datum key);
     datum Fetch(char * str, int len) {
-        datum key;
-        key.dptr = str;
-        key.dsize = len;
+        datum key = {str, len};
         return gdbm_fetch(db_, key);
     }
     static Handle<Value> Fetch(const v8::Arguments& args) {
@@ -152,9 +148,7 @@ public:
     }
 
     bool Exists(char * str, int len) {
-        datum key;
-        key.dptr = str;
-        key.dsize = len;
+        datum key = {str, len};
         return gdbm_exists(db_, key);
     }
     static Handle<Value> Exists(const v8::Arguments& args) {
@@ -162,6 +156,30 @@ public:
         assert(args.Length() >= 1);
         v8::Handle<v8::String> key = args[0]->ToString();
         bool ret = Unwrap<GDBM>(args.This())->Exists(
+            *String::Utf8Value(key),
+            key->Length()
+        );
+        return scope.Close(v8::Boolean::New(ret));
+    }
+
+    int Fdesc() {
+        return gdbm_fdesc(db_);
+    }
+    static Handle<Value> Fdesc(const v8::Arguments& args) {
+        HandleScope scope;
+        int ret = Unwrap<GDBM>(args.This())->Fdesc();
+        return scope.Close(v8::Int32::New(ret));
+    }
+
+    bool Delete(char * str, int len) {
+        datum key = {str, len};
+        return gdbm_delete(db_, key);
+    }
+    static Handle<Value> Delete(const v8::Arguments& args) {
+        HandleScope scope;
+        assert(args.Length() >= 1);
+        v8::Handle<v8::String> key = args[0]->ToString();
+        bool ret = Unwrap<GDBM>(args.This())->Delete(
             *String::Utf8Value(key),
             key->Length()
         );

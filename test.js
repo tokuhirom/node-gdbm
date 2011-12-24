@@ -25,10 +25,13 @@ exports.files = function (t) {
     t.equal(db.errno(), 0);
     t.ok(gdbm.GDBM_WRITER);
     var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
+    t.ok(ret);
     console.log(db.strerror());
     console.log('errno: ' + db.errno());
     db.sync();
-    t.ok(ret);
+    t.ok(db.fdesc());
+    console.log(db.fdesc());
+    t.ok((''+db.fdesc()).match(/^[0-9]+$/));
     db.close();
 
     t.done();
@@ -55,7 +58,7 @@ exports.store_fetch = function (t) {
     t.done();
 };
 
-exports.exists = function (t) {
+exports.exists_delete = function (t) {
     var db = new gdbm.GDBM();
 
     var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
@@ -63,6 +66,8 @@ exports.exists = function (t) {
     t.ok(!db.exists('dan'));
     db.store('dan', 'kogai');
     t.ok(db.exists('dan'));
+    db.delete('dan');
+    t.ok(!db.exists('dan'));
     db.close();
 
     t.done();
