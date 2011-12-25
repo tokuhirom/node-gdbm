@@ -19,8 +19,7 @@ GDBM is a GNU’s reinterpretation of dbm. You can use it as local KVS.
 Methods
 -------
 
-gdbm.GDBM.prototype.open(filename[, block_size[, flag[, mode]]])
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.open(filename[, block_size[, flag[, mode]]])
 
 Open database files.
 
@@ -36,15 +35,14 @@ will use the stat block size for the file system.
 	gdbm.GDBM_WRCREAT: writer - if database does not exist create new one
 	gdbm.GDBM_NEWDB: writer - create new database regardless if one exists
 
-The gdbm.GDBM_NOMMAP  added to read_write by bitwise or instructs gdbm_open
+The `gdbm.GDBM_NOMMAP`  added to `read_write` by bitwise or instructs `gdbm_open`
 to disable the use of mmap(2).
 
-For the last three (writers of the database) the following may be added added to read_write by bitwise or: GDBM_SYNC, which causes all database operations to be synchronized to the disk, and GDBM_NOLOCK, which prevents the library from performing any locking on the database file. 
+For the last three (writers of the database) the following may be added added to `read_write` by bitwise or: `GDBM_SYNC`, which causes all database operations to be synchronized to the disk, and `GDBM_NOLOCK`, which prevents the library from performing any locking on the database file. 
 
-Mode is the file mode (see chmod(2) and open(2) ) if the file is created. (*Fatal_func) () is a function for dbm to call if it detects a fatal error. The only parameter of this function is a string. If the value of 0 is provided, gdbm will use a default function.
+Mode is the file mode (see chmod(2) and open(2) ) if the file is created.
 
-gdbm.GDBM.prototype.store(key, value[, flags])
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.store(key, value[, flags])
 
 Key is the key  data. Value  is  the data to be associated with the key.
 Flag can have one of the following values:
@@ -56,49 +54,44 @@ Flag can have one of the following values:
               Replace contents if key exists.
 
 If a reader calls gdbm.GDBM.prototype.store, the return value will be  -1.  If  called
-with  GDBM_INSERT  and key is in the database, the return value will be
+with  `GDBM_INSERT`  and key is in the database, the return value will be
 1.  Otherwise, the return value is 0.
 
 NOTICE: If you store data for a key that is already in the  data  base,
 gdbm   replaces  the  old  data  with  the  new  data  if  called  with
-GDBM_REPLACE.  You do not get two data items for the same key  and  you
-do not get an error from gdbm_store.
+`GDBM_REPLACE`.  You do not get two data items for the same key  and  you
+do not get an error from `store`.
 
 NOTICE:  The  size in gdbm is not restricted like in dbm or ndbm.  Your
 data can be as large as you want.
 
-var str = gdbm.GDBM.prototype.fetch(key)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### var str = gdbm.GDBM.prototype.fetch(key)
 
 Fetch the entry from database.
 
 Key is the key data.
 
-var b = gdbm.GDBM.prototype.exists(key)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### var b = gdbm.GDBM.prototype.exists(key)
 
 Key  is  the  key  data  to search for.
 
 If the key is found within the database, the return value will be true.
 If nothing appropiate is found, false is  returned. This  routine  is
 useful  for  checking for the existence of a record, without performing
-the memory allocation done by gdbm_fetch
+the memory allocation done by `gdbm_fetch`
 
-gdbm.GDBM.prototype.delete(key)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.delete(key)
 
 Key is the key data.
 
 The return value is false if the item is not present or the requester is a
 reader.  The return value is true if there was a successful delete.
 
-gdbm.GDBM.prototype.firstkey()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.firstkey()
 
 It’s possible to loop over every key in the database using this method and the nextkey() method. The traversal is ordered by gdbm‘s internal hash values, and won’t be sorted by the key values. This method returns the starting key.  
 
-gdbm.GDBM.prototype.nextkey(key)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.nextkey(key)
 
 Returns the key that follows key in the traversal. The following code prints every key in the database db, without having to create a list in memory that contains them all:
 
@@ -108,13 +101,11 @@ Returns the key that follows key in the traversal. The following code prints eve
         key = db.nextkey(key);
     }
 
-gdbm.GDBM.prototype.sync()
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.sync()
 
 When the database has been opened in fast mode, this method forces any unwritten data to be written to the disk.
 
-gdbm.GDBM.prototype.reorganize()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### gdbm.GDBM.prototype.reorganize()
 
 If you have had a lot of deletions and would like to shrink  the  space
 used by the gdbm file, this routine will reorganize the database.  Gdbm
