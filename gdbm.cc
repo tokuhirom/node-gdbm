@@ -61,7 +61,7 @@ public:
         NODE_SET_METHOD(t, "strerror", StrError);
     }
 
-    bool Open (const char* fname, int block_size, int flags, int mode) {
+    bool Open (char* fname, int block_size, int flags, int mode) {
         db_ = gdbm_open(fname, block_size, flags, mode, NULL);
         return !!db_;
     }
