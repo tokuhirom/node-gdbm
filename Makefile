@@ -10,13 +10,13 @@ test: gdbm.node
 	nodeunit test/
 
 deps:
-	npm install nodeunit
+	npm install
 
 clean:
 	rm -rf build/ hoge.db .lock-wscript
 
-push:
+push: test clean
 	npm publish
 
-.PHONY: test all
+.PHONY: test all clean push deps
 

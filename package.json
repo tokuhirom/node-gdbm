@@ -2,7 +2,7 @@
   "author": "Tokuhiro Matsuno <tokuhirom@gmail.com> (http://64p.org/)",
   "name": "gdbm",
   "description": "gdbm for node.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": {
     "url": "https://github.com/tokuhirom/node-gdbm"
   },
