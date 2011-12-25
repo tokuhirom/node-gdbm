@@ -3,7 +3,7 @@ all: gdbm.node
 build/config.log:
 	node-waf configure
 
-version.h:
+version.h: package.json
 	node author/version.js
 
 gdbm.node: gdbm.cc build/config.log version.h

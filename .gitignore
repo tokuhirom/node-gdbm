@@ -2,4 +2,3 @@
 build/
 hoge.db
 node_modules/
-version.h

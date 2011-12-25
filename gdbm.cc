@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <cstdio>
 
-#include "build/version.h"
+#include "version.h"
 
 using namespace v8;
 using namespace node;

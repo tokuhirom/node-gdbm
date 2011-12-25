@@ -16,8 +16,6 @@ def configure(conf):
     conf.env.append_unique('LINKFLAGS', '-lgdbm')
 
 def build(bld):
-    bld.exec_command('node ../author/version.js')
-
     obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
     obj.target = 'gdbm'
     obj.source = 'gdbm.cc'
