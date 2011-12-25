@@ -6,7 +6,7 @@ build/config.log:
 version.h: package.json
 	node author/version.js
 
-gdbm.node: gdbm.cc build/config.log version.h
+gdbm.node: gdbm.cc build/config.log version.h package.json
 	node-waf
 
 test: gdbm.node
