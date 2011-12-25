@@ -11,6 +11,8 @@ using namespace node;
 
 #define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
 
+#define NODE_GDBM_VERSION "1.0.0"
+
 static Persistent<String> open_symbol;
 static Persistent<String> close_symbol;
 static Persistent<String> store_symbol;
@@ -293,6 +295,8 @@ init(Handle<Object> target) {
 
     target->Set(v8::String::NewSymbol("gdbm_version"),
         v8::String::New(gdbm_version));
+    target->Set(v8::String::NewSymbol("version"),
+        v8::String::New(NODE_GDBM_VERSION));
 
     GDBM::Initialize(target);
 }
