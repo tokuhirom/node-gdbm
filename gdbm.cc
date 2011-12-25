@@ -292,7 +292,9 @@ init(Handle<Object> target) {
     NODE_DEFINE_CONSTANT(target, GDBM_NEWDB);
     NODE_DEFINE_CONSTANT(target, GDBM_SYNC);
     NODE_DEFINE_CONSTANT(target, GDBM_NOLOCK);
+#ifdef GDBM_NOMMAP
     NODE_DEFINE_CONSTANT(target, GDBM_NOMMAP);
+#endif
 
     target->Set(v8::String::NewSymbol("gdbm_version"),
         v8::String::New(gdbm_version));
