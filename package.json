@@ -4,7 +4,7 @@
   "description": "gdbm for node.js",
   "version": "1.0.0",
   "repository": {
-    "url": ""
+    "url": "https://github.com/tokuhirom/node-gdbm"
   },
   "scripts": {
     "test": "make test"
