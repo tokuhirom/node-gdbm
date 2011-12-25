@@ -70,7 +70,8 @@ exports.exists_delete = function (t) {
     t.ok(!db.exists('dan'));
     db.store('dan', 'kogai');
     t.ok(db.exists('dan'));
-    db.delete('dan');
+    t.ok(db.delete('dan'));
+    t.ok(!db.delete('dan'));
     t.ok(!db.exists('dan'));
     db.reorganize();
     db.close();

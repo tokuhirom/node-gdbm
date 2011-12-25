@@ -11,7 +11,7 @@ using namespace node;
 
 #define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
 
-#define NODE_GDBM_VERSION "1.0.1"
+#define NODE_GDBM_VERSION "1.0.2"
 
 static Persistent<String> open_symbol;
 static Persistent<String> close_symbol;
@@ -211,7 +211,7 @@ public:
 
     bool Delete(char * str, int len) {
         datum key = {str, len};
-        return gdbm_delete(db_, key);
+        return gdbm_delete(db_, key)==0;
     }
     static Handle<Value> Delete(const v8::Arguments& args) {
         HandleScope scope;
@@ -292,6 +292,7 @@ init(Handle<Object> target) {
     NODE_DEFINE_CONSTANT(target, GDBM_NEWDB);
     NODE_DEFINE_CONSTANT(target, GDBM_SYNC);
     NODE_DEFINE_CONSTANT(target, GDBM_NOLOCK);
+    NODE_DEFINE_CONSTANT(target, GDBM_NOMMAP);
 
     target->Set(v8::String::NewSymbol("gdbm_version"),
         v8::String::New(gdbm_version));
