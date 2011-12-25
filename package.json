@@ -3,8 +3,10 @@
   "name": "gdbm",
   "description": "gdbm for node.js",
   "version": "1.0.1",
+  "url": "https://github.com/tokuhirom/node-gdbm/",
   "repository": {
-    "url": "https://github.com/tokuhirom/node-gdbm"
+    "type": git",
+    "url": "git://github.com/tokuhirom/node-gdbm.git"
   },
   "scripts": {
     "test": "make test"
