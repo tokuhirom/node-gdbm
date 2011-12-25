@@ -15,5 +15,8 @@ deps:
 clean:
 	rm -rf build/ hoge.db .lock-wscript
 
+push:
+	npm publish
+
 .PHONY: test all
 

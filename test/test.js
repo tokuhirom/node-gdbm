@@ -10,6 +10,12 @@ exports.setUp = function (callback) {
         callback();
     });
 };
+exports.tearDown = function (callback) {
+    fs.unlink('hoge.db', function (err) {
+        // ignore error
+        callback();
+    });
+};
 
 exports.gdbm_version = function (t) {
     console.log(gdbm.gdbm_version);
