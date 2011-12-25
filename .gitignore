@@ -3,3 +3,4 @@ build/
 hoge.db
 node_modules/
 gdbm.node
+npm-debug.log
