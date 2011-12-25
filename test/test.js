@@ -1,6 +1,6 @@
 "use strict";
 
-var gdbm = require('./build/Release/gdbm'),
+var gdbm = require('../build/Release/gdbm'),
     fs = require('fs'),
     undefined;
 
@@ -156,6 +156,19 @@ exports.errHandling = function (t) {
     t.throws(function () { db.fdesc(); });
     t.throws(function () { db.firstkey(); });
     t.throws(function () { db.nextkey('hoge'); });
+
+    t.done();
+};
+
+exports.argsErrorHandling = function (t) {
+    var db = new gdbm.GDBM();
+
+    var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
+    db.store();
+    db.fetch();
+    db.exists();
+    db.reorganize();
+    db.nextkey();
 
     t.done();
 };
