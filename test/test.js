@@ -164,11 +164,10 @@ exports.argsErrorHandling = function (t) {
     var db = new gdbm.GDBM();
 
     var ret = db.open('hoge.db', 0, gdbm.GDBM_WRCREAT);
-    db.store();
-    db.fetch();
-    db.exists();
-    db.reorganize();
-    db.nextkey();
+    t.throws(function () { db.store(); });
+    t.throws(function () { db.fetch(); });
+    t.throws(function () { db.exists(); });
+    t.throws(function () { db.nextkey(); });
 
     t.done();
 };

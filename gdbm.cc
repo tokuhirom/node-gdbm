@@ -9,11 +9,7 @@
 using namespace v8;
 using namespace node;
 
-Handle<Value> Method(const Arguments& args) {
-  HandleScope scope;
-  return scope.Close(String::New("world"));
-}
-
+#define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
 
 static Persistent<String> open_symbol;
 static Persistent<String> close_symbol;
@@ -70,7 +66,9 @@ public:
 	static Handle<Value> Open(const v8::Arguments& args) {
 		HandleScope scope;
         int block_size = 0;
-        assert(args.Length() > 1);
+        if (args.Length()<1) {
+            THROW("First parameter must be a string");
+        }
         if (args.Length()>=2) {
             block_size = args[1]->Int32Value();
         }
@@ -126,7 +124,9 @@ public:
 	static Handle<Value> Store(const v8::Arguments& args) {
         HandleScope scope;
         CHECK_DB();
-        assert(args.Length() >= 2);
+        if (args.Length()<2) {
+            THROW("Usage: db.store(key, val[, flags])");
+        }
         int flag = GDBM_REPLACE;
         if (args.Length() > 2) {
             flag = args[2]->Int32Value();
@@ -151,7 +151,9 @@ public:
     static Handle<Value> Fetch(const v8::Arguments& args) {
         HandleScope scope;
         CHECK_DB();
-        assert(args.Length() >= 1);
+        if (args.Length()<1) {
+            THROW("Usage: db.fetch(key)");
+        }
         v8::Handle<v8::String> key = args[0]->ToString();
         datum val = Unwrap<GDBM>(args.This())->Fetch(
             *String::Utf8Value(key),
@@ -173,7 +175,9 @@ public:
     static Handle<Value> Exists(const v8::Arguments& args) {
         HandleScope scope;
         CHECK_DB();
-        assert(args.Length() >= 1);
+        if (args.Length()<1) {
+            THROW("Usage: db.exists(key)");
+        }
         v8::Handle<v8::String> key = args[0]->ToString();
         bool ret = Unwrap<GDBM>(args.This())->Exists(
             *String::Utf8Value(key),
@@ -243,7 +247,9 @@ public:
     static Handle<Value> NextKey(const v8::Arguments& args) {
         HandleScope scope;
         CHECK_DB();
-        assert(args.Length()==1);
+        if (args.Length()<1) {
+            THROW("Usage: db.nextkey(key)");
+        }
 
         v8::Handle<v8::String> ckey = args[0]->ToString();
         datum nkey = Unwrap<GDBM>(args.This())->NextKey(
@@ -277,7 +283,6 @@ public:
 extern "C" void
 init(Handle<Object> target) {
     HandleScope scope;
-    NODE_SET_METHOD(target, "gdbm", Method);
 
     NODE_DEFINE_CONSTANT(target, GDBM_READER);
     NODE_DEFINE_CONSTANT(target, GDBM_WRITER);
