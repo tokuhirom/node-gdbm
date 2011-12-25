@@ -16,7 +16,7 @@ deps:
 	npm install
 
 clean:
-	rm -rf build/ hoge.db .lock-wscript version.h
+	rm -rf build/ hoge.db .lock-wscript version.h gdbm.node
 
 push: test clean
 	npm publish
