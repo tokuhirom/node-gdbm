@@ -6,12 +6,12 @@
 #include <stdlib.h>
 #include <cstdio>
 
+#include "version.h"
+
 using namespace v8;
 using namespace node;
 
 #define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
-
-#define NODE_GDBM_VERSION "1.0.2"
 
 static Persistent<String> open_symbol;
 static Persistent<String> close_symbol;

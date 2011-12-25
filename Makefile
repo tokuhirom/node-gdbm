@@ -3,7 +3,10 @@ all: gdbm.node
 build/config.log:
 	node-waf configure
 
-gdbm.node: gdbm.cc build/config.log
+version.h:
+	node author/version.js
+
+gdbm.node: gdbm.cc build/config.log version.h
 	node-waf
 
 test: gdbm.node
@@ -13,7 +16,7 @@ deps:
 	npm install
 
 clean:
-	rm -rf build/ hoge.db .lock-wscript
+	rm -rf build/ hoge.db .lock-wscript version.h
 
 push: test clean
 	npm publish
