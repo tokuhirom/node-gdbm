@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+"use strict";
+var gdbm = require('gdbm'),
+    util = require('util'),
+    undefined;
+
+console.log(process.argv);
+if (process.argv.length !== 3) {
+    util.puts("Usage: gdbm-list path");
+    process.exit(1);
+}
+var path = process.argv[2];
+
+var db = new gdbm.GDBM();
+if (!db.open(path, 0, gdbm.GDBM_READER)) {
+    throw db.strerror();
+}
+var key = db.firstkey();
+while (key) {
+    console.log(key);
+    key = db.nextkey(key);
+}
