@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/tokuhirom/node-gdbm.png)](http://travis-ci.org/tokuhirom/node-gdbm)
 GDBM for node.js
 ================
 
