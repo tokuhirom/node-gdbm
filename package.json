@@ -10,13 +10,18 @@
   },
   "main": "./gdbm",
   "scripts": {
-    "test": "make test"
-  },
-  "engines": {
-    "node": "~0.6.6"
+    "test": "make test",
+    "install": "node-waf clean ; node-waf configure build"
   },
   "dependencies": {},
   "devDependencies": {
     "nodeunit": ">=0.0.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "gdbm"
+  ],
+  "license": "BSD"
 }
