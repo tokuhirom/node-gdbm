@@ -2,13 +2,13 @@
   "author": "Tokuhiro Matsuno <tokuhirom@gmail.com> (http://64p.org/)",
   "name": "gdbm",
   "description": "gdbm for node.js",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "url": "https://github.com/tokuhirom/node-gdbm/",
   "repository": {
     "type": "git",
     "url": "git://github.com/tokuhirom/node-gdbm.git"
   },
-  "main" : "./gdbm",
+  "main": "./gdbm",
   "scripts": {
     "test": "make test"
   },
