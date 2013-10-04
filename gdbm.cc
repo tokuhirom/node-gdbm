@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <cstdio>
 
-#include "version.h"
-
 using namespace v8;
 using namespace node;
 
@@ -304,3 +302,4 @@ init(Handle<Object> target) {
     GDBM::Initialize(target);
 }
 
+NODE_MODULE(gdbm, init)
