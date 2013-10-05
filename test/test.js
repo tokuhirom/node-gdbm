@@ -1,6 +1,6 @@
 "use strict";
 
-var gdbm = require('../build/Release/gdbm'),
+var gdbm = require('../index'),
     fs = require('fs'),
     undefined;
 
